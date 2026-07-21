@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Você, Com Amor</title>
+
+<!-- ============================================================ -->
+<!-- CDNs -->
+<!-- ============================================================ -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,900;1,500;1,600&family=Parisienne&family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================ */
+/* 1. DESIGN TOKENS — cores, tipografia                          */
+/* ============================================================ */
+:root{
+  --font-display:'Playfair Display', serif;
+  --font-script:'Parisienne', cursive;
+  --font-body:'Poppins', sans-serif;
+}
+
+html[data-theme="light"]{
+  --bg:#FFF9F6;
+  --bg-2:#FCEEF3;
+  --bg-3:#FBF3E7;
+  --surface: 255,255,255;
+  --surface-a: 0.55;
+  --border: 210,150,120;
+  --pink: #F3B8CC;
+  --pink-soft:#FBE0E9;
+  --gold:#C8996A;
+  --gold-soft:#E7CBA3;
+  --wine:#B5637A;
+  --text:#4A2E35;
+  --text-soft:#8A6570;
+  --shadow: 214,166,140;
+}
+
+html[data-theme="dark"]{
+  --bg:#0B0710;
+  --bg-2:#170D22;
+  --bg-3:#1C1024;
+  --surface: 255,255,255;
+  --surface-a: 0.06;
+  --border: 255,120,170;
+  --pink: #FF4FA0;
+  --pink-soft:#5C1A2B;
+  --gold:#E3B77C;
+  --gold-soft:#B98A4E;
+  --wine:#5C1A2B;
+  --text:#F3E6EE;
+  --text-soft:#C9A8BC;
+  --shadow: 0,0,0;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  transition:background .6s ease, color .6s ease;
+}
+
+.font-display{ font-family:var(--font-display); }
+.font-script{ font-family:var(--font-script); }
+
+::selection{ background:var(--pink); color:#fff; }
+
+/* Scrollbar */
+::-webkit-scrollbar{ width:10px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:var(--gold); border-radius:10px; }
+
+/* ============================================================ */
+/* 2. UTILITÁRIOS DE COR (usados no lugar de classes tailwind)    */
+/* ============================================================ */
+.bg-app{ background:var(--bg); }
+.bg-app-2{ background:var(--bg-2); }
+.text-app{ color:var(--text); }
+.text-soft{ color:var(--text-soft); }
+.text-gold{ color:var(--gold); }
+.text-pink{ color:var(--pink); }
+.border-gold{ border-color:var(--gold); }
+
+.gradient-bg{
+  background:
+    radial-gradient(60% 50% at 15% 10%, rgba(var(--border),0.16), transparent 60%),
+    radial-gradient(50% 40% at 90% 20%, rgba(var(--border),0.14), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+}
+
+/* Glassmorphism */
+.glass{
+  background: rgba(var(--surface), var(--surface-a));
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(var(--border), 0.18);
+}
+
+/* Neumorphism (usado no toggle de tema e botão surpresa) */
+.neu{
+  background: var(--bg);
+  box-shadow: 8px 8px 16px rgba(var(--shadow),0.18), -8px -8px 16px rgba(255,255,255,0.5);
+}
+html[data-theme="dark"] .neu{
+  box-shadow: 8px 8px 18px rgba(0,0,0,0.55), -6px -6px 14px rgba(255,255,255,0.03);
+}
+
+/* Moldura elegante para fotos */
+.frame{
+  position:relative;
+  padding:10px;
+  background: linear-gradient(145deg, rgba(var(--border),0.35), rgba(var(--border),0.05));
+  border-radius:1.1rem;
+}
+.frame::before{
+  content:'';
+  position:absolute; inset:4px;
+  border:1px solid rgba(var(--border),0.55);
+  border-radius:0.9rem;
+  pointer-events:none;
+}
+.frame img{ border-radius:0.7rem; display:block; }
+
+/* Divisor ornamental */
+.ornament{ display:flex; align-items:center; gap:.9rem; justify-content:center; }
+.ornament .line{ height:1px; width:56px; background:linear-gradient(90deg, transparent, var(--gold), transparent); }
+
+/* ============================================================ */
+/* 3. ANIMAÇÕES                                                  */
+/* ============================================================ */
+@keyframes floatUp{
+  0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+  10%{ opacity:.9; }
+  90%{ opacity:.7; }
+  100%{ transform:translateY(-115vh) translateX(var(--drift,20px)) rotate(20deg); opacity:0; }
+}
+.floating-heart{
+  position:fixed; bottom:-40px; z-index:5; pointer-events:none;
+  color:var(--pink); filter:drop-shadow(0 0 6px rgba(var(--border),0.35));
+  animation: floatUp linear forwards;
+}
+
+@keyframes twinkle{
+  0%,100%{ opacity:0; transform:scale(.4); }
+  50%{ opacity:1; transform:scale(1); }
+}
+.sparkle{
+  position:fixed; z-index:4; border-radius:50%;
+  background:var(--gold); pointer-events:none;
+  animation: twinkle ease-in-out infinite;
+}
+
+@keyframes clickHeartPop{
+  0%{ transform:translate(-50%,-50%) scale(0.3); opacity:1; }
+  100%{ transform:translate(-50%,-50%) translateY(-70px) scale(1.2); opacity:0; }
+}
+.click-heart{
+  position:fixed; z-index:9999; pointer-events:none;
+  color:var(--pink);
+  animation: clickHeartPop 1s ease-out forwards;
+}
+
+.reveal{ opacity:0; transform:translateY(36px); transition:opacity .9s cubic-bezier(.16,.8,.3,1), transform .9s cubic-bezier(.16,.8,.3,1), filter .9s ease; filter:blur(6px); }
+.reveal.visible{ opacity:1; transform:translateY(0); filter:blur(0); }
+.reveal-scale{ opacity:0; transform:scale(.88); transition:opacity .8s ease, transform .8s cubic-bezier(.16,.8,.3,1); }
+.reveal-scale.visible{ opacity:1; transform:scale(1); }
+.reveal-left{ opacity:0; transform:translateX(-50px); transition:opacity .9s ease, transform .9s cubic-bezier(.16,.8,.3,1); }
+.reveal-left.visible{ opacity:1; transform:translateX(0); }
+.reveal-right{ opacity:0; transform:translateX(50px); transition:opacity .9s ease, transform .9s cubic-bezier(.16,.8,.3,1); }
+.reveal-right.visible{ opacity:1; transform:translateX(0); }
+
+@keyframes gentlePulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+.pulse-heart{ animation: gentlePulse 2.6s ease-in-out infinite; }
+
+@keyframes shimmer{
+  0%{ background-position:-200% 0; }
+  100%{ background-position:200% 0; }
+}
+.shimmer-text{
+  background:linear-gradient(90deg, var(--gold-soft), var(--gold), var(--pink), var(--gold), var(--gold-soft));
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:shimmer 6s linear infinite;
+}
+
+/* Splash / welcome */
+#welcome{
+  position:fixed; inset:0; z-index:100;
+  display:flex; align-items:center; justify-content:center;
+  transition: transform 1s cubic-bezier(.76,0,.24,1), opacity 1s ease;
+}
+#welcome.hide{ transform:translateY(-100%); opacity:0.2; pointer-events:none; }
+
+#site{ opacity:0; transition:opacity 1.2s ease; }
+#site.show{ opacity:1; }
+
+/* Hover cards */
+.tilt-card{ transition: transform .5s cubic-bezier(.16,.8,.3,1), box-shadow .5s ease; }
+.tilt-card:hover{ transform: translateY(-10px) rotate(-0.4deg) scale(1.015); }
+
+.gallery-item{ overflow:hidden; position:relative; cursor:pointer; }
+.gallery-item img{ transition: transform 1.1s cubic-bezier(.16,.8,.3,1), filter .6s ease; }
+.gallery-item:hover img{ transform:scale(1.12); filter:brightness(.75) saturate(1.1); }
+.gallery-overlay{ opacity:0; transition:opacity .5s ease, transform .5s ease; transform:translateY(12px); }
+.gallery-item:hover .gallery-overlay{ opacity:1; transform:translateY(0); }
+
+/* Carousel */
+.carousel-track{ transition: transform .9s cubic-bezier(.76,0,.24,1); }
+
+/* Back to top */
+#backToTop{ transition: opacity .4s ease, transform .4s ease, background .4s ease; }
+
+/* Modal surpresa */
+#surpriseModal{ transition: opacity .5s ease; }
+#surpriseModal .box{ transition: transform .55s cubic-bezier(.34,1.56,.64,1), opacity .5s ease; }
+
+/* Custom range input for gallery hint scroll (mobile) */
+@media (max-width:640px){
+  .hide-mobile{ display:none; }
+}
+
+/* Focus visibility (acessibilidade) */
+a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+</style>
+</head>
+
+<body class="gradient-bg text-app">
+
+<!-- ============================================================ -->
+<!-- CAMADA DE FUNDO: partículas + corações flutuantes             -->
+<!-- Gerados via JS. Não editar aqui.                               -->
+<!-- ============================================================ -->
+<div id="heartsLayer" aria-hidden="true"></div>
+<div id="sparkleLayer" aria-hidden="true"></div>
+
+<!-- ============================================================ -->
+<!-- TOGGLE DE TEMA                                                 -->
+<!-- ============================================================ -->
+<button id="themeToggle" aria-label="Alternar tema claro e escuro"
+  class="neu fixed top-5 right-5 z-50 w-12 h-12 rounded-full flex items-center justify-center text-lg text-gold hover:scale-110 active:scale-95 transition-transform">
+  <i class="fa-solid fa-moon" id="themeIcon"></i>
+</button>
+
+<!-- ============================================================ -->
+<!-- TELA DE BOAS-VINDAS                                            -->
+<!-- ============================================================ -->
+<div id="welcome" class="gradient-bg">
+  <div class="text-center px-6 max-w-xl reveal-scale visible">
+    <div class="mb-6 flex justify-center">
+      <i class="fa-solid fa-heart text-4xl text-pink pulse-heart"></i>
+    </div>
+    <!-- ✏️ EDITE AQUI: mensagem de boas-vindas -->
+    <p class="font-script text-3xl md:text-4xl text-gold mb-3">para você,</p>
+    <h1 class="font-display text-4xl md:text-6xl font-semibold leading-tight mb-5">
+      a pessoa que faz minha vida mais <span class="shimmer-text italic">feliz</span>, eu te amo
+    </h1>
+    <p class="text-soft text-sm md:text-base mb-10 tracking-wide">
+      dediquei um tempo fazendo isso, pois sinto que não demostro o quanto vc merece ser amada🤍
+    </p>
+    <button id="demoBtn"
+      class="group relative px-8 py-4 rounded-full font-medium text-sm md:text-base tracking-wide overflow-hidden neu text-app hover:text-white transition-colors duration-500">
+      <span class="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500"
+            style="background:linear-gradient(90deg, var(--pink), var(--gold));"></span>
+      <span class="relative flex items-center gap-2">
+        <i class="fa-solid fa-sparkles"></i> Ver demonstração
+      </span>
+    </button>
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- SITE PRINCIPAL                                                 -->
+<!-- ============================================================ -->
+<div id="site">
+
+  <!-- ============================================================ -->
+  <!-- HERO -->
+  <!-- ============================================================ -->
+  <section id="hero" class="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+    <div id="parallaxLayer1" class="absolute -top-24 -left-24 w-72 h-72 rounded-full blur-3xl opacity-40" style="background:var(--pink);"></div>
+    <div id="parallaxLayer2" class="absolute -bottom-24 -right-16 w-80 h-80 rounded-full blur-3xl opacity-30" style="background:var(--gold-soft);"></div>
+
+    <div class="relative z-10 text-center max-w-3xl reveal-scale">
+      <div class="ornament mb-6">
+        <span class="line"></span>
+        <i class="fa-solid fa-heart text-pink text-sm"></i>
+        <span class="line"></span>
+      </div>
+      <!-- ✏️ EDITE AQUI: nome do casal -->
+      <p class="font-script text-2xl md:text-3xl text-gold mb-2">Para meu amor</p>
+      <!-- ✏️ EDITE AQUI: frase de destaque do hero -->
+      <h1 class="font-display text-4xl sm:text-5xl md:text-7xl font-semibold leading-[1.1] mb-6">
+        Tudo na vida tem seu começo <br class="hide-mobile"> e eu diria que meu começo <span class="italic text-pink">é VC </span> minha princesa🤍​
+      </h1>
+      <p class="text-soft max-w-lg mx-auto mb-10 text-sm md:text-base">
+        volte aqui sempre que quiser ver o quanto eu te amo.
+      </p>
+      <a href="#contador" class="inline-flex items-center gap-2 text-sm tracking-widest uppercase text-gold hover:gap-3 transition-all">
+        Descer <i class="fa-solid fa-chevron-down text-xs"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CONTADOR DE TEMPO JUNTOS -->
+  <!-- ============================================================ -->
+  <section id="contador" class="relative py-24 px-6">
+    <div class="max-w-4xl mx-auto text-center reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">nosso tempo</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl mb-12">Estamos juntos há</h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div class="glass rounded-2xl py-6 md:py-8 tilt-card">
+          <p id="cd-days" class="font-display text-3xl md:text-5xl text-pink">0000</p>
+          <p class="text-xs md:text-sm text-soft uppercase tracking-widest mt-2">dias</p>
+        </div>
+        <div class="glass rounded-2xl py-6 md:py-8 tilt-card">
+          <p id="cd-hours" class="font-display text-3xl md:text-5xl text-pink">00</p>
+          <p class="text-xs md:text-sm text-soft uppercase tracking-widest mt-2">horas</p>
+        </div>
+        <div class="glass rounded-2xl py-6 md:py-8 tilt-card">
+          <p id="cd-minutes" class="font-display text-3xl md:text-5xl text-pink">00</p>
+          <p class="text-xs md:text-sm text-soft uppercase tracking-widest mt-2">minutos</p>
+        </div>
+        <div class="glass rounded-2xl py-6 md:py-8 tilt-card">
+          <p id="cd-seconds" class="font-display text-3xl md:text-5xl text-pink">00</p>
+          <p class="text-xs md:text-sm text-soft uppercase tracking-widest mt-2">segundos</p>
+        </div>
+      </div>
+      <p class="text-soft text-xs mt-6 tracking-wide">desde <span id="cd-startlabel" class="text-gold"></span></p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- GALERIA DE FOTOS -->
+  <!-- ✏️ EDITE AQUI: troque os links de imagem por fotos do casal   -->
+  <!-- ============================================================ -->
+  <section id="galeria" class="relative py-24 px-6 bg-app-2">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <div class="ornament mb-4">
+          <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">flagras nossos</span><span class="line"></span>
+        </div>
+        <h2 class="font-display text-3xl md:text-5xl">Galeria de Momentos</h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 auto-rows-[160px] md:auto-rows-[200px]">
+        <div class="frame gallery-item reveal-scale row-span-2 col-span-1">
+          <img src="/fotos/fotos10.jpg" alt="Foto do casal 1" class="w-full h-full object-cover">
+          <div class="gallery-overlay absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/60 to-transparent rounded-2xl">
+            <p class="text-white text-sm font-script text-lg">Moh moh com vergonha</p>
+          </div>
+        </div>
+        <div class="frame gallery-item reveal-scale col-span-1">
+          <img src="/fotos/foto2.jpg" alt="Foto do casal 2" class="w-full h-full object-cover">
+          <div class="gallery-overlay absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/60 to-transparent rounded-2xl">
+            <p class="text-white text-sm font-script text-lg">Primeiro encontro</p>
+          </div>
+        </div>
+        <div class="frame gallery-item reveal-scale row-span-2 col-span-1">
+          <img src="/fotos/foto09.jpg" alt="Foto do casal 3" class="w-full h-full object-cover">
+          <div class="gallery-overlay absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/60 to-transparent rounded-2xl">
+            <p class="text-white text-sm font-script text-lg">Você bravinha</p>
+          </div>
+        </div>
+        <div class="frame gallery-item reveal-scale row-span-2 col-span-1">
+          <img src="/fotos/foto4.jpg" alt="Foto do casal 4" class="w-full h-full object-cover">
+          <div class="gallery-overlay absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/60 to-transparent rounded-2xl">
+            <p class="text-white text-sm font-script text-lg">Nossa primeria viagem para longe</p>
+          </div>
+        </div>
+        <div class="frame gallery-item reveal-scale row-span-2 col-span-1">
+          <img src="fotos/foto5.jpg" alt="Foto do casal 5" class="w-full h-full object-cover">
+          <div class="gallery-overlay absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/60 to-transparent rounded-2xl">
+            <p class="text-white text-sm font-script text-lg">Nosso primeiro beijo registrado 😭 </p>
+          </div>
+        </div>
+       
+        <div class="frame gallery-item reveal-scale col-span-1">
+          <img src="fotos/foto07.jpg" alt="Foto do casal 7" class="w-full h-full object-cover">
+          <div class="gallery-overlay absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/60 to-transparent rounded-2xl">
+            <p class="text-white text-sm font-script text-lg">Aqui tomamos chuva</p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CARROSSEL AUTOMÁTICO -->
+  <!-- ✏️ EDITE AQUI: fotos, legendas -->
+  <!-- ============================================================ -->
+  <section id="carrossel" class="relative py-24 px-6">
+    <div class="max-w-3xl mx-auto text-center mb-12 reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">em movimento</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl">A MULHER MAIS LINDA DESSE MUNDO</h2>
+    </div>
+
+    <div class="relative max-w-2xl mx-auto reveal-scale">
+      <div class="frame overflow-hidden">
+        <div id="carouselTrack" class="carousel-track flex">
+          <div class="min-w-full"><img src="/fotos/moh01.jpg" class="w-full h-72 md:h-[420px] object-cover" alt="Slide 1"></div>
+          <div class="min-w-full"><img src="/fotos/moh02.png" class="w-full h-72 md:h-[420px] object-cover" alt="Slide 2"></div>
+          <div class="min-w-full"><img src="/fotos/moh03.jpg" class="w-full h-72 md:h-[420px] object-cover" alt="Slide 3"></div>
+          <div class="min-w-full"><img src="/fotos/moh04.jpg" class="w-full h-72 md:h-[420px] object-cover" alt="Slide 4"></div>
+        </div>
+      </div>
+      <button id="carPrev" aria-label="Foto anterior" class="glass absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"><i class="fa-solid fa-chevron-left"></i></button>
+      <button id="carNext" aria-label="Próxima foto" class="glass absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform"><i class="fa-solid fa-chevron-right"></i></button>
+      <div id="carDots" class="flex justify-center gap-2 mt-6"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- LINHA DO TEMPO -->
+  <!-- ✏️ EDITE AQUI: datas e eventos da história de vocês -->
+  <!-- ============================================================ -->
+  <section id="historia" class="relative py-24 px-6 bg-app-2">
+    <div class="max-w-3xl mx-auto text-center mb-16 reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">capítulo a capítulo</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl">Nossa História</h2>
+    </div>
+
+    <div class="max-w-2xl mx-auto relative pl-10 md:pl-0">
+      <div class="absolute left-3 md:left-1/2 top-0 bottom-0 w-px" style="background:linear-gradient(180deg, transparent, var(--gold), transparent);"></div>
+
+      <!-- item 1 -->
+      <div class="relative mb-14 md:flex md:items-center reveal-left">
+        <div class="absolute left-3 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style="background:var(--pink); box-shadow:0 0 0 5px rgba(var(--border),0.15);"></div>
+        <div class="md:w-1/2 md:pr-10 md:text-right">
+          <p class="text-gold text-xs uppercase tracking-widest mb-1">Julho de 2025</p>
+          <h3 class="font-display text-xl mb-1">O primeiro "oi"</h3>
+          <p class="text-soft text-sm">quem diria que uma "cantada" iria trazer a gente aqui kkkk </p>
+        </div>
+      </div>
+      <!-- item 2 -->
+      <div class="relative mb-14 md:flex md:items-center md:flex-row-reverse reveal-right">
+        <div class="absolute left-3 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style="background:var(--pink); box-shadow:0 0 0 5px rgba(var(--border),0.15);"></div>
+        <div class="md:w-1/2 md:pl-10">
+          <p class="text-gold text-xs uppercase tracking-widest mb-1">Agosto de 2025</p>
+          <h3 class="font-display text-xl mb-1">Primeiro encontro</h3>
+          <p class="text-soft text-sm">Mesmo que para vc não tenha sido muito legal 😅​, eu gostei bastante </p>
+        </div>
+      </div>
+      <!-- item 3 -->
+      <div class="relative mb-14 md:flex md:items-center reveal-left">
+        <div class="absolute left-3 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style="background:var(--pink); box-shadow:0 0 0 5px rgba(var(--border),0.15);"></div>
+        <div class="md:w-1/2 md:pr-10 md:text-right">
+          <p class="text-gold text-xs uppercase tracking-widest mb-1">Novembro de 2025</p>
+          <h3 class="font-display text-xl mb-1">Ficamos juntos</h3>
+          <p class="text-soft text-sm">nesse dia finalmente vc cedeu a mim 🥳 </p>
+        </div>
+      </div>
+      <!-- item 4 -->
+      <div class="relative mb-14 md:flex md:items-center md:flex-row-reverse reveal-right">
+        <div class="absolute left-3 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style="background:var(--pink); box-shadow:0 0 0 5px rgba(var(--border),0.15);"></div>
+        <div class="md:w-1/2 md:pl-10">
+          <p class="text-gold text-xs uppercase tracking-widest mb-1">Fevereiro de 2026</p>
+          <h3 class="font-display text-xl mb-1">quando vc foi embora, mas sempre ao meu lado</h3>
+          <p class="text-soft text-sm">Deus decidiu testar nosso relacionameto de um jeito diferente, e ele pode ver o quanto somos fortes jutos </p>
+        </div>
+      </div>
+      <!-- item 5 -->
+      <div class="relative reveal-left">
+        <div class="absolute left-3 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style="background:var(--pink); box-shadow:0 0 0 5px rgba(var(--border),0.15);"></div>
+        <div class="md:w-1/2 md:pr-10 md:text-right">
+          <p class="text-gold text-xs uppercase tracking-widest mb-1">Hoje</p>
+          <h3 class="font-display text-xl mb-1">E continuamos escrevendo</h3>
+          <p class="text-soft text-sm">Essa história ainda tem muitas páginas em branco — e eu quero preenchê-las com você.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- MOMENTOS ESPECIAIS (cards) -->
+  <!-- ✏️ EDITE AQUI: momentos favoritos -->
+  <!-- ============================================================ -->
+  <section id="momentos" class="relative py-24 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <div class="ornament mb-4">
+          <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">favoritos</span><span class="line"></span>
+        </div>
+        <h2 class="font-display text-3xl md:text-5xl">Momentos Especiais</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="glass rounded-2xl p-8 tilt-card reveal">
+          <i class="fa-regular fa-handshake text-2xl text-gold mb-4"></i>
+          <h3 class="font-display text-xl mb-2">Pedido de namoro</h3>
+          <p class="text-soft text-sm"> Aqui foi quando viramos namoradinho e namoradinha 🤍</p>
+        </div>
+        <div class="glass rounded-2xl p-8 tilt-card reveal">
+          <i class="fa-regular fa-face-kiss text-2xl text-gold mb-4"></i>
+          <h3 class="font-display text-xl mb-2">Primeiro beijo 🙈​</h3>
+          <p class="text-soft text-sm"> Pra mim foi muito especial, vc beija bem em gatinha 😏​</p>
+        </div>
+        <div class="glass rounded-2xl p-8 tilt-card reveal">
+          <i class="fa-regular fa-heart text-2xl text-gold mb-4"></i>
+          <h3 class="font-display text-xl mb-2">Conhecer sua família</h3>
+          <p class="text-soft text-sm">Sei que vc acha que não, mas eles sempre foram muito importante para mim</p>
+        </div>
+        <div class="glass rounded-2xl p-8 tilt-card reveal">
+          <i class="fa-solid fa-heart text-2xl text-gold mb-4"></i>
+          <h3 class="font-display text-xl mb-2">Estar com vc</h3>
+          <p class="text-soft text-sm">Somente sua presença para mim já é um momento especial, poder te abraçar, te bejiar, eu amo vc</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CARTAS DE AMOR -->
+  <!-- ✏️ EDITE AQUI: o texto das cartas -->
+  <!-- ============================================================ -->
+  <section id="cartas" class="relative py-24 px-6 bg-app-2">
+    <div class="max-w-3xl mx-auto text-center mb-14 reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">com carinho</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl">Carta de Amor</h2>
+    </div>
+
+    <div class="max-w-2xl mx-auto glass rounded-3xl p-8 md:p-12 reveal-scale">
+      <i class="fa-solid fa-quote-left text-gold text-xl mb-4 block"></i>
+      <p class="font-script text-2xl md:text-3xl leading-relaxed text-app mb-6">
+        Se um dia você duvidar do que sente por mim, volte aqui e leia: eu escolho você — no caos, na calma,
+        no comum dos dias e nas datas especiais. Obrigada por tornar tudo mais leve.
+      </p>
+      <p class="text-right text-soft text-sm">— para meu moh moh </p>
+    </div>
+
+    <!-- Área interativa: escrever uma nova cartinha (fica salva só durante a visita) -->
+    
+        <button id="letterBtn" class="px-6 py-3 rounded-full text-sm neu text-gold hover:scale-105 active:scale-95 transition-transform">
+          <i class=""></i>
+        </button>
+      </div>
+      <div id="lettersList" class="grid sm:grid-cols-2 gap-4 mt-8"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- FRASES ROMÂNTICAS -->
+  <!-- ✏️ EDITE AQUI: troque as frases -->
+  <!-- ============================================================ -->
+  <section id="frases" class="relative py-24 px-6">
+    <div class="max-w-3xl mx-auto text-center mb-14 reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">palavras</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl">Frases Nossas</h2>
+    </div>
+    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+      <blockquote class="glass rounded-2xl p-7 reveal-left">
+        <p class="font-script text-2xl text-app">"Ain, ninguém gosta de mim 😫​"</p>
+      </blockquote>
+      <blockquote class="glass rounded-2xl p-7 reveal-right">
+        <p class="font-script text-2xl text-app">"Ainnn, feiosoo"</p>
+      </blockquote>
+      <blockquote class="glass rounded-2xl p-7 reveal-left">
+        <p class="font-script text-2xl text-app">"Ainnn, ninguémm me amaa mesmo"</p>
+      </blockquote>
+      <blockquote class="glass rounded-2xl p-7 reveal-right">
+        <p class="font-script text-2xl text-app">"moh moh"</p>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- VERSÍCULOS BÍBLICOS -->
+  <!-- ✏️ EDITE AQUI: troque os versículos -->
+  <!-- ============================================================ -->
+  <section id="versiculos" class="relative py-24 px-6 bg-app-2">
+    <div class="max-w-3xl mx-auto text-center mb-14 reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">com fé</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl">Palavra que Nos Guia</h2>
+    </div>
+    <div class="max-w-3xl mx-auto space-y-5">
+      <div class="glass rounded-2xl p-7 flex gap-4 items-start reveal">
+        <i class="fa-solid fa-book-open text-gold mt-1"></i>
+        <p class="text-app text-sm md:text-base leading-relaxed">
+          "O amor é "O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo sofre, tudo crê, tudo espera, tudo suporta."
+          <span class="block text-gold text-xs mt-2 uppercase tracking-widest">1 Coríntios 13:4-7</span>
+        </p>
+      </div>
+      <div class="glass rounded-2xl p-7 flex gap-4 items-start reveal">
+        <i class="fa-solid fa-book-open text-gold mt-1"></i>
+        <p class="text-app text-sm md:text-base leading-relaxed">
+          "Portanto, o que Deus uniu, ninguém o separe."
+          <span class="block text-gold text-xs mt-2 uppercase tracking-widest">Marcos 10:9</span>
+        </p>
+      </div>
+      <div class="glass rounded-2xl p-7 flex gap-4 items-start reveal">
+        <i class="fa-solid fa-book-open text-gold mt-1"></i>
+        <p class="text-app text-sm md:text-base leading-relaxed">
+          "Confia no Senhor de todo o teu coração e não te apoies no teu próprio entendimento; reconhece-o em todos os teus caminhos, e ele endireitará as tuas veredas."
+          <span class="block text-gold text-xs mt-2 uppercase tracking-widest">Provérbios 3:5-6</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- MÚSICAS FAVORITAS -->
+  <!-- ✏️ EDITE AQUI: troque nomes das músicas/artistas -->
+  <!-- ============================================================ -->
+  <section id="musicas" class="relative py-24 px-6">
+    <div class="max-w-3xl mx-auto text-center mb-14 reveal">
+      <div class="ornament mb-4">
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">nossa trilha sonora</span><span class="line"></span>
+      </div>
+      <h2 class="font-display text-3xl md:text-5xl">Nossa música</h2>
+    </div>
+    
+      <div class="glass rounded-2xl p-5 flex items-center gap-4 tilt-card reveal">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style="background:var(--pink-soft);">
+          <i class="fa-solid fa-heart text-pink"></i>
+        </div>
+        <div>
+          <p class="font-medium text-app text-sm">VISCERAL</p>
+          <p class="text-soft text-xs">JOSÉ JR</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- BOTÃO SURPRESA -->
+  <!-- ✏️ EDITE AQUI: a mensagem surpresa -->
+  <!-- ============================================================ -->
+  <section id="surpresa" class="relative py-28 px-6 text-center bg-app-2">
+    <div class="reveal-scale">
+      <i class="fa-solid fa-gift text-3xl text-gold mb-5 block"></i>
+      <h2 class="font-display text-3xl md:text-5xl mb-6">Tem uma coisinha pra você...</h2>
+      <button id="surpriseBtn" class="neu px-10 py-5 rounded-full text-app font-medium tracking-wide hover:scale-105 active:scale-95 transition-transform">
+        <i class="fa-solid fa-wand-magic-sparkles text-gold mr-2"></i> Clique para uma surpresa
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- RODAPÉ -->
+  <!-- ✏️ EDITE AQUI: frase final -->
+  <!-- ============================================================ -->
+  <footer class="relative py-14 px-6 text-center border-t" style="border-color:rgba(var(--border),0.15);">
+    <i class="fa-solid fa-heart text-pink mb-3 block pulse-heart"></i>
+    <p class="font-script text-2xl text-gold mb-2">feito com todo o amor que existe para minha princesa</p>
+    <p class="text-soft text-xs tracking-widest uppercase">feito para meu moh moh</p>
+  </footer>
+
+</div><!-- /#site -->
+
+<!-- ============================================================ -->
+<!-- BOTÃO VOLTAR AO TOPO -->
+<!-- ============================================================ -->
+<button id="backToTop" aria-label="Voltar ao topo"
+  class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full glass flex items-center justify-center opacity-0 pointer-events-none translate-y-4 text-gold hover:scale-110 active:scale-95">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<!-- ============================================================ -->
+<!-- MODAL SURPRESA -->
+<!-- ✏️ EDITE AQUI: mensagem final da surpresa -->
+<!-- ============================================================ -->
+<div id="surpriseModal" class="fixed inset-0 z-[200] hidden items-center justify-center px-6" style="background:rgba(0,0,0,0.55); backdrop-filter:blur(6px);">
+  <div class="box glass rounded-3xl p-10 max-w-md w-full text-center relative opacity-0 scale-75">
+    <button id="closeModal" aria-label="Fechar" class="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center hover:bg-black/5"><i class="fa-solid fa-xmark text-soft"></i></button>
+    <i class="fa-solid fa-heart-circle-check text-3xl text-pink mb-4 pulse-heart"></i>
+    <h3 class="font-display text-2xl mb-3">Surpresa!</h3>
+    <p class="font-script text-2xl text-app leading-relaxed">
+      Eu te amo mais do que qualquer palavra bonita consegue explicar.
+      Obrigada por existir e por escolher caminhar comigo. 💛
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT                                                     -->
+<!-- ============================================================ -->
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------------------------------------------------- */
+  /* 1. TEMA CLARO/ESCURO — com persistência em localStorage      */
+  /* ---------------------------------------------------------- */
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+
+  function applyTheme(theme){
+    root.setAttribute('data-theme', theme);
+    themeIcon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    localStorage.setItem('site-theme', theme);
+  }
+  const savedTheme = localStorage.getItem('site-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(savedTheme);
+
+  themeBtn.addEventListener('click', function(){
+    const current = root.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  /* ---------------------------------------------------------- */
+  /* 2. TELA DE BOAS-VINDAS -> "Ver demonstração"                 */
+  /* ---------------------------------------------------------- */
+  const welcome = document.getElementById('welcome');
+  const site = document.getElementById('site');
+  document.getElementById('demoBtn').addEventListener('click', function(){
+    welcome.classList.add('hide');
+    site.classList.add('show');
+    document.body.style.overflow = 'auto';
+    setTimeout(function(){ welcome.style.display = 'none'; }, 1000);
+  });
+  // impede scroll do site enquanto a tela de boas-vindas estiver visível
+  document.body.style.overflow = 'hidden';
+
+  /* ---------------------------------------------------------- */
+  /* 3. CORAÇÕES FLUTUANTES DE FUNDO                              */
+  /* ---------------------------------------------------------- */
+  const heartsLayer = document.getElementById('heartsLayer');
+  function spawnFloatingHeart(){
+    const heart = document.createElement('i');
+    heart.className = 'fa-solid fa-heart floating-heart';
+    const size = 10 + Math.random()*18;
+    heart.style.left = Math.random()*100 + 'vw';
+    heart.style.fontSize = size + 'px';
+    heart.style.opacity = 0.35 + Math.random()*0.4;
+    heart.style.setProperty('--drift', (Math.random()*80-40)+'px');
+    const duration = 10 + Math.random()*8;
+    heart.style.animationDuration = duration + 's';
+    heartsLayer.appendChild(heart);
+    setTimeout(function(){ heart.remove(); }, duration*1000);
+  }
+  setInterval(spawnFloatingHeart, 1300);
+  for(let i=0;i<5;i++){ setTimeout(spawnFloatingHeart, i*400); }
+
+  /* ---------------------------------------------------------- */
+  /* 4. PARTÍCULAS / BRILHOS DISCRETOS                            */
+  /* ---------------------------------------------------------- */
+  const sparkleLayer = document.getElementById('sparkleLayer');
+  function spawnSparkle(){
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    const size = 2 + Math.random()*3;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.top = Math.random()*100 + 'vh';
+    s.style.animationDuration = (2 + Math.random()*3) + 's';
+    sparkleLayer.appendChild(s);
+    setTimeout(function(){ s.remove(); }, 5000);
+  }
+  setInterval(spawnSparkle, 500);
+
+  /* ---------------------------------------------------------- */
+  /* 5. CORAÇÕES AO CLICAR EM QUALQUER LUGAR                      */
+  /* ---------------------------------------------------------- */
+  document.addEventListener('click', function(e){
+    // evita conflito com botões que já tem sua própria animação/click handler
+    const heart = document.createElement('i');
+    heart.className = 'fa-solid fa-heart click-heart';
+    heart.style.left = e.clientX + 'px';
+    heart.style.top = e.clientY + 'px';
+    heart.style.fontSize = (12 + Math.random()*10) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(function(){ heart.remove(); }, 1000);
+  });
+
+  /* ---------------------------------------------------------- */
+  /* 6. CONTADOR "JUNTOS HÁ..."                                   */
+  /* ✏️ EDITE AQUI: data de início do relacionamento               */
+  /* ---------------------------------------------------------- */
+  const startDate = new Date('2025-11-01T00:00:00');
+  document.getElementById('cd-startlabel').textContent = startDate.toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function updateCounter(){
+    const now = new Date();
+    let diff = Math.max(0, now - startDate);
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const minutes = Math.floor((diff / (1000*60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent = days;
+    document.getElementById('cd-hours').textContent = pad(hours);
+    document.getElementById('cd-minutes').textContent = pad(minutes);
+    document.getElementById('cd-seconds').textContent = pad(seconds);
+  }
+  updateCounter();
+  setInterval(updateCounter, 1000);
+
+  /* ---------------------------------------------------------- */
+  /* 7. ANIMAÇÕES AO ROLAR A PÁGINA (IntersectionObserver)        */
+  /* ---------------------------------------------------------- */
+  const revealTargets = document.querySelectorAll('.reveal, .reveal-scale, .reveal-left, .reveal-right');
+  const observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold:0.15, rootMargin:'0px 0px -60px 0px' });
+  revealTargets.forEach(function(el){ observer.observe(el); });
+
+  /* ---------------------------------------------------------- */
+  /* 8. PARALLAX SUAVE NO HERO                                    */
+  /* ---------------------------------------------------------- */
+  const layer1 = document.getElementById('parallaxLayer1');
+  const layer2 = document.getElementById('parallaxLayer2');
+  window.addEventListener('mousemove', function(e){
+    const x = (e.clientX / window.innerWidth - 0.5);
+    const y = (e.clientY / window.innerHeight - 0.5);
+    if(layer1) layer1.style.transform = `translate(${x*30}px, ${y*30}px)`;
+    if(layer2) layer2.style.transform = `translate(${x*-25}px, ${y*-25}px)`;
+  });
+  window.addEventListener('scroll', function(){
+    const scrolled = window.scrollY;
+    if(layer1) layer1.style.marginTop = (scrolled*0.15)+'px';
+    if(layer2) layer2.style.marginTop = (scrolled*-0.1)+'px';
+  });
+
+  /* ---------------------------------------------------------- */
+  /* 9. CARROSSEL AUTOMÁTICO DE FOTOS                              */
+  /* ---------------------------------------------------------- */
+  const track = document.getElementById('carouselTrack');
+  const slides = track.children.length;
+  const dotsWrap = document.getElementById('carDots');
+  let current = 0;
+  let autoTimer;
+
+  for(let i=0;i<slides;i++){
+    const dot = document.createElement('button');
+    dot.className = 'w-2.5 h-2.5 rounded-full transition-all';
+    dot.style.background = i===0 ? 'var(--gold)' : 'rgba(var(--border),0.3)';
+    dot.setAttribute('aria-label', 'Ir para foto ' + (i+1));
+    dot.addEventListener('click', function(){ goTo(i); resetAuto(); });
+    dotsWrap.appendChild(dot);
+  }
+
+  function goTo(index){
+    current = (index + slides) % slides;
+    track.style.transform = `translateX(-${current*100}%)`;
+    Array.from(dotsWrap.children).forEach(function(d, i){
+      d.style.background = i===current ? 'var(--gold)' : 'rgba(var(--border),0.3)';
+    });
+  }
+  function nextSlide(){ goTo(current+1); }
+  function resetAuto(){
+    clearInterval(autoTimer);
+    autoTimer = setInterval(nextSlide, 4200);
+  }
+  document.getElementById('carNext').addEventListener('click', function(){ nextSlide(); resetAuto(); });
+  document.getElementById('carPrev').addEventListener('click', function(){ goTo(current-1); resetAuto(); });
+  resetAuto();
+
+  /* ---------------------------------------------------------- */
+  /* 10. CARTAS DE AMOR — interativo (guardado só na visita)      */
+  /* ---------------------------------------------------------- */
+  const lettersList = document.getElementById('lettersList');
+  document.getElementById('letterBtn').addEventListener('click', function(){
+    const input = document.getElementById('letterInput');
+    const text = input.value.trim();
+    if(!text) return;
+    const card = document.createElement('div');
+    card.className = 'glass rounded-2xl p-5 reveal visible';
+    card.innerHTML = '<i class="fa-solid fa-envelope-open-text text-gold mb-2 block"></i><p class="font-script text-xl text-app">' +
+      text.replace(/</g,'&lt;') + '</p>';
+    lettersList.prepend(card);
+    input.value = '';
+  });
+
+  /* ---------------------------------------------------------- */
+  /* 11. BOTÃO SURPRESA + MODAL                                    */
+  /* ---------------------------------------------------------- */
+  const surpriseModal = document.getElementById('surpriseModal');
+  const surpriseBox = surpriseModal.querySelector('.box');
+  document.getElementById('surpriseBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    surpriseModal.classList.remove('hidden');
+    surpriseModal.classList.add('flex');
+    requestAnimationFrame(function(){
+      surpriseBox.style.opacity = 1;
+      surpriseBox.style.transform = 'scale(1)';
+    });
+  });
+  function closeSurprise(){
+    surpriseBox.style.opacity = 0;
+    surpriseBox.style.transform = 'scale(0.75)';
+    setTimeout(function(){
+      surpriseModal.classList.add('hidden');
+      surpriseModal.classList.remove('flex');
+    }, 400);
+  }
+  document.getElementById('closeModal').addEventListener('click', function(e){ e.stopPropagation(); closeSurprise(); });
+  surpriseModal.addEventListener('click', function(e){ if(e.target === surpriseModal) closeSurprise(); });
+
+  /* ---------------------------------------------------------- */
+  /* 12. BOTÃO VOLTAR AO TOPO                                      */
+  /* ---------------------------------------------------------- */
+  const backToTop = document.getElementById('backToTop');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > 500){
+      backToTop.style.opacity = 1;
+      backToTop.style.transform = 'translateY(0)';
+      backToTop.style.pointerEvents = 'auto';
+    } else {
+      backToTop.style.opacity = 0;
+      backToTop.style.transform = 'translateY(16px)';
+      backToTop.style.pointerEvents = 'none';
+    }
+  });
+  backToTop.addEventListener('click', function(){
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+
+})();
+</script>
+</body>
+</html>
