@@ -236,6 +236,20 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
 }
+
+/* Player de música - estilo romântico */
+#seekBar{
+  accent-color: var(--gold);
+  height:4px;
+}
+#seekBar::-webkit-slider-thumb{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  cursor:pointer;
+  background:var(--pink);
+  box-shadow:0 0 10px rgba(243,184,204,.8);
+}
 </style>
 </head>
 
@@ -656,10 +670,10 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
           <p class="text-soft text-xs">JOSÉ JR</p>
 
           <div class="mt-3 w-full h-1 rounded-full"
-               style="background:rgba(var(--border),0.2);">
+               style="background:linear-gradient(90deg,rgba(243,184,204,.25),rgba(200,153,106,.25));">
             <div id="progressBar"
-                 class="h-1 rounded-full"
-                 style="width:0%; background:var(--pink);">
+                 class="h-1 rounded-full transition-all duration-300"
+                 style="width:0%; background:linear-gradient(90deg,var(--pink),var(--gold),var(--pink)); box-shadow:0 0 10px rgba(243,184,204,.7);">
             </div>
           </div>
 
