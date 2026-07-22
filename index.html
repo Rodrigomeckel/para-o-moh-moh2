@@ -357,7 +357,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-14 reveal">
         <div class="ornament mb-4">
-          <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">nossos momentos</span><span class="line"></span>
+          <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">flagras nossos</span><span class="line"></span>
         </div>
         <h2 class="font-display text-3xl md:text-5xl">Galeria de Momentos</h2>
       </div>
@@ -412,7 +412,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
   <section id="carrossel" class="relative py-24 px-6">
     <div class="max-w-3xl mx-auto text-center mb-12 reveal">
       <div class="ornament mb-4">
-        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">A mais lindona</span><span class="line"></span>
+        <span class="line"></span><span class="text-xs tracking-[0.3em] uppercase text-gold">em movimento</span><span class="line"></span>
       </div>
       <h2 class="font-display text-3xl md:text-5xl">A MULHER MAIS LINDA DESSE MUNDO</h2>
     </div>
@@ -606,7 +606,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
       <div class="glass rounded-2xl p-7 flex gap-4 items-start reveal">
         <i class="fa-solid fa-book-open text-gold mt-1"></i>
         <p class="text-app text-sm md:text-base leading-relaxed">
-          "O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo sofre, tudo crê, tudo espera, tudo suporta."
+          "O amor é "O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo sofre, tudo crê, tudo espera, tudo suporta."
           <span class="block text-gold text-xs mt-2 uppercase tracking-widest">1 Coríntios 13:4-7</span>
         </p>
       </div>
@@ -640,13 +640,43 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
     </div>
     
       <div class="glass rounded-2xl p-5 flex items-center gap-4 tilt-card reveal">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style="background:var(--pink-soft);">
-          <i class="fa-solid fa-heart text-pink"></i>
-        </div>
-        <div>
+
+        <audio id="musicPlayer">
+          <source src="Visceral - Acústico_spotdown.org.mp3" type="audio/mpeg">
+        </audio>
+
+        <button id="playMusic"
+          class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 hover:scale-110 transition"
+          style="background:var(--pink-soft);">
+          <i id="playIcon" class="fa-solid fa-play text-pink"></i>
+        </button>
+
+        <div class="flex-1">
           <p class="font-medium text-app text-sm">VISCERAL</p>
           <p class="text-soft text-xs">JOSÉ JR</p>
+
+          <div class="mt-3 w-full h-1 rounded-full"
+               style="background:rgba(var(--border),0.2);">
+            <div id="progressBar"
+                 class="h-1 rounded-full"
+                 style="width:0%; background:var(--pink);">
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-2 text-xs text-soft">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+
+          <input id="seekBar"
+                 type="range"
+                 min="0"
+                 max="100"
+                 value="0"
+                 class="w-full mt-2 cursor-pointer">
+          
         </div>
+
       </div>
     </div>
   </section>
@@ -898,6 +928,91 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-of
     lettersList.prepend(card);
     input.value = '';
   });
+
+  /* ---------------------------------------------------------- */
+  /* PLAYER DE MÚSICA COM SEEK E TIMER - VISCERAL               */
+  /* ---------------------------------------------------------- */
+  const music = document.getElementById("musicPlayer");
+  const playBtn = document.getElementById("playMusic");
+  const playIcon = document.getElementById("playIcon");
+  const seekBar = document.getElementById("seekBar");
+  const progressBar = document.getElementById("progressBar");
+  const currentTime = document.getElementById("currentTime");
+  const duration = document.getElementById("duration");
+
+  function formatTime(value){
+    if(!Number.isFinite(value)) return "0:00";
+    const minutes = Math.floor(value / 60);
+    const seconds = Math.floor(value % 60).toString().padStart(2,"0");
+    return minutes + ":" + seconds;
+  }
+
+  if(music && playBtn && seekBar){
+
+    music.load();
+
+    playBtn.addEventListener("click", async function(){
+
+      try{
+
+        if(music.paused){
+          await music.play();
+          playIcon.className = "fa-solid fa-pause text-pink";
+        }else{
+          music.pause();
+          playIcon.className = "fa-solid fa-play text-pink";
+        }
+
+      }catch(error){
+        console.log("Erro ao tocar música:", error);
+      }
+
+    });
+
+
+    music.addEventListener("loadedmetadata", function(){
+
+      seekBar.max = Math.floor(music.duration);
+      duration.textContent = formatTime(music.duration);
+
+    });
+
+
+    music.addEventListener("timeupdate", function(){
+
+      seekBar.value = Math.floor(music.currentTime);
+
+      currentTime.textContent = formatTime(music.currentTime);
+
+      if(music.duration){
+        progressBar.style.width =
+          ((music.currentTime / music.duration) * 100) + "%";
+      }
+
+    });
+
+
+    seekBar.addEventListener("input", function(){
+
+      music.currentTime = Number(this.value);
+
+      currentTime.textContent =
+        formatTime(music.currentTime);
+
+    });
+
+
+    music.addEventListener("ended", function(){
+
+      playIcon.className = "fa-solid fa-play text-pink";
+      seekBar.value = 0;
+      progressBar.style.width = "0%";
+      currentTime.textContent = "0:00";
+
+    });
+
+  }
+
 
   /* ---------------------------------------------------------- */
   /* 11. BOTÃO SURPRESA + MODAL                                    */
